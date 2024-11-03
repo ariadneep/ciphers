@@ -59,7 +59,8 @@ public static class HillCipher
         key = Mod26(key);
 
         // A 2x2 invertible matrix has a set formula for when it is and isn't invertible
-        if ((CalcDeterminant(key) == 0))
+        double det = CalcDeterminant(key);
+        if ((det == 0 || det%2==0 || det%13==0))
         {
             err = "This 2x2 matrix has a determinant of 0 and is not invertible.";
             return false;
