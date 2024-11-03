@@ -24,7 +24,7 @@ public static class HillCipher
     /// <exception cref="ArgumentException"> If the key or message is invalid </exception>
     public static string Encrypt(int[][] key, string message)
     {
-        // 1) Check if key and message are valid. If message is not divisible by 2, add X to the end
+        // 1) Check if key and message are valid. 
         if (!(CheckKeyValidity(key, out string? err) && CheckMessageValidity(message, out err)))
             throw new ArgumentException(err);
 
@@ -48,16 +48,9 @@ public static class HillCipher
     private static bool CheckKeyValidity(int[][] key, out string? err)
     {
         // Check if it's square: a non-square matrix cannot be invertible
-        if (key.Length != key[0].Length)
+        if (!IsInvertible2x2(key))
         {
-            err = "Key matrix is not square and thus not invertible.";
-            return false;
-        }
-
-        // If it's not 2x2 then the key is invalid. 
-        if (key.Length != 2)
-        {
-            err = "The key must be a 2x2 matrix.";
+            err = "Key matrix is not a 2x2 invertible matrix.";
             return false;
         }
 
@@ -65,13 +58,36 @@ public static class HillCipher
         key = Mod26(key);
 
         // A 2x2 invertible matrix has a set formula for when it is and isn't invertible
-        if ((key[0][0] * key[1][1]) - (key[0][1] * key[1][0]) == 0)
+        if ((calcDeterminant(key) == 0))
         {
             err = "This 2x2 matrix has a determinant of 0 and is not invertible.";
             return false;
         }
         err = null;
         return true;
+    }
+
+    /// <summary>
+    /// Helper method that calculates the determinant of a 2x2 matrix.
+    /// </summary>
+    /// <param name="matrix"> a 2x2 square matrix</param>
+    /// <exception cref="ArgumentException"> if natrix is not a 2x2 square matrix</exception>
+    /// <returns></returns>
+    private static int calcDeterminant(int[][] matrix)
+    {
+        if (!IsInvertible2x2(matrix))
+            throw new ArgumentException("Matrix must be 2x2!");
+        return (matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0]);
+    }
+
+    /// <summary>
+    /// Helper that checks if a matrix is a 2x2 invertible matrix
+    /// </summary>
+    /// <param name="arr"> the matrix to check </param>
+    /// <returns>true if it is, false if it is not</returns>
+    private static bool IsInvertible2x2(int[][] arr)
+    {
+        return arr.Length == arr[0].Length && arr.Length == 2;
     }
 
     /// <summary>
@@ -241,13 +257,33 @@ public static class HillCipher
     /// <param name="key"> The key used to create the encryption</param>
     /// <param name="message"> The encrypted message</param>
     /// <returns> The decrypted message </returns>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <exception cref="ArgumentException"> if the key is not invertible</exception>
     public static string Decrypt(int[][] key, string message)
     {
-        string decrypted = string.Empty;
+        string decrypted = string.Empty; //set up a string to return
+
+        //ensure that the key and the message are both valid
+        //(i.e. the message consists of only letters and the key is invertible)
+        if (!(CheckKeyValidity(key, out string? err) && CheckMessageValidity(message, out err)))
+            throw new ArgumentException(err);
         //1) set the key to modulo 26
         key = Mod26(key);
 
+        //2) find the inverse of the key; 
+        //3) revert message back into array
+        //4) multiply the inverse into that collection
+        //5) rebuild the string
         return decrypted;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="matrix"></param>
+    /// <returns>the inverse of the given 2x2 matrix.</returns>
+    private static int[][] Invert2x2(int[][] matrix)
+    {
+        int[][] inverse = new int[matrix.Length][];
+        return inverse;
     }
 }
