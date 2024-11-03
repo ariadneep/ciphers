@@ -23,14 +23,14 @@ public static class HillCipher
     /// <param name="message"> The message to be encrypted. Must contain only letters</param>
     /// <returns> The encrypted message </returns>
     /// <exception cref="ArgumentException"> If the key or message is invalid </exception>
-    public static string Encrypt(int[][] key, string message)
+    public static string Encrypt(double[][] key, string message)
     {
         // 1) Check if key and message are valid. 
         if (!(CheckKeyValidity(key, out string? err) && CheckMessageValidity(message, out err)))
             throw new ArgumentException(err);
 
         // 2) Set all letters in the string to a jagged array of their position in the alphabet broken into sub-vectors of length n (key.Length)
-        int[][] vectorCollection = BuildNumMatrix(message, key.Length);
+        double[][] vectorCollection = BuildNumMatrix(message, key.Length);
 
         // 3) Multiply the key into each column 
         vectorCollection = MultiplyIntoCollection(key, vectorCollection);
@@ -46,7 +46,7 @@ public static class HillCipher
     /// <param name="key"> The matrix used as a key for the encryption </param>
     /// <param name="err"> The error message to be displayed</param>
     /// <returns> True if the matrix is invertible modulo 26, false otherwise </returns>
-    private static bool CheckKeyValidity(int[][] key, out string? err)
+    private static bool CheckKeyValidity(double[][] key, out string? err)
     {
         // Check if it's square: a non-square matrix cannot be invertible
         if (!Is2x2(key))
@@ -74,7 +74,7 @@ public static class HillCipher
     /// <param name="matrix"> a 2x2 square matrix</param>
     /// <exception cref="ArgumentException"> if matrix is not a 2x2 matrix</exception>
     /// <returns></returns>
-    private static int CalcDeterminant(int[][] matrix)
+    private static double CalcDeterminant(double[][] matrix)
     {
         if (!Is2x2(matrix))
             throw new ArgumentException("Matrix must be 2x2!");
@@ -86,7 +86,7 @@ public static class HillCipher
     /// </summary>
     /// <param name="arr"> the matrix to check </param>
     /// <returns>true if it is, false if it is not</returns>
-    private static bool Is2x2(int[][] arr)
+    private static bool Is2x2(double[][] arr)
     {
         return arr.Length == arr[0].Length && arr.Length == 2;
     }
@@ -116,7 +116,7 @@ public static class HillCipher
     /// </summary>
     /// <param name="arr"> A jagged array </param>
     /// <returns> A modified version of the original jagged array where each entry becomes itself mod 26. </returns>
-    private static int[][] Mod26(int[][] arr)
+    private static double[][] Mod26(double[][] arr)
     {
         for (int i = 0; i < arr.Length; i++)
         {
@@ -136,7 +136,7 @@ public static class HillCipher
     /// <param name="message"> The message to turn into an array of coded numbers </param>
     /// <param name="numRows"> The number of rows/cols in the key. </param>
     /// <returns> The jagged array </returns>
-    private static int[][] BuildNumMatrix(string message, int numRows)
+    private static double[][] BuildNumMatrix(string message, int numRows)
     {
         if (message.Length % 2 != 0)
             message += "x";
@@ -144,11 +144,11 @@ public static class HillCipher
         char[] toEncode = message.ToLower().ToCharArray();
 
         int numCols = toEncode.Length / 2;
-        int[][] intArr = new int[numRows][];
+        double[][] numArr = new double[numRows][];
 
         for (int i = 0; i < numRows; i++)
         {
-            intArr[i] = new int[numCols]; // Initialize each row of the jagged array
+            numArr[i] = new double[numCols]; // Initialize each row of the jagged array
         }
 
         int index = 0; // Keeps track of the toEncode index
@@ -156,12 +156,12 @@ public static class HillCipher
         {
             for (int row = 0; row < numRows; row++) // Only after you fill out every row in that column
             {
-                intArr[row][col] = Array.IndexOf(alphabet, toEncode[index]);
+                numArr[row][col] = Array.IndexOf(alphabet, toEncode[index]);
                 index++;
             }
         }
 
-        return intArr;
+        return numArr;
     }
 
     /// <summary>
@@ -170,13 +170,13 @@ public static class HillCipher
     /// <param name="key"> the key matrix</param>
     /// <param name="collection"> a collection of vectors </param>
     /// <returns> the multiplied collection </returns>
-    private static int[][] MultiplyIntoCollection(int[][] key, int[][] collection)
+    private static double[][] MultiplyIntoCollection(double[][] key, double[][] collection)
     {
         // For each column of the collection 
         for (int col = 0; col < collection[0].Length; col++)
         {
             // Create an array to hold the column vector
-            int[] columnVector = new int[collection.Length];
+            double[] columnVector = new double[collection.Length];
 
             // Extract the column at index 'col'
             for (int row = 0; row < collection.Length; row++)
@@ -185,7 +185,7 @@ public static class HillCipher
             }
 
             // Perform the matrix multiplication
-            int[] result = MatrixTimesVector(key, columnVector);
+            double[] result = MatrixTimesVector(key, columnVector);
 
             // Store the result back into the collection at the appropriate column
             for (int row = 0; row < collection.Length; row++)
@@ -205,12 +205,12 @@ public static class HillCipher
     /// rows in the vector. </param>
     /// <param name="right"> a vector, with rows = to the number of columns in the left matrix </param>
     /// <returns></returns>
-    private static int[] MatrixTimesVector(int[][] left, int[] right)
+    private static double[] MatrixTimesVector(double[][] left, double[] right)
     {
-        int[] product = new int[left.Length];
+        double[] product = new double[left.Length];
         for(int row = 0; row < left.Length; row++)
         {
-            int dot = 0;
+            double dot = 0;
             for(int col = 0; col < left[row].Length; col++)
             {
                 dot += left[row][col] * right[col];
@@ -226,7 +226,7 @@ public static class HillCipher
     /// <param name="vectorCollection"> a collection of column vectors of integers organized in a 2D array.
     /// Entries must be in mod 26 form </param>
     /// <returns></returns>
-    private static string CipherToString(int[][] vectorCollection)
+    private static string CipherToString(double[][] vectorCollection)
     {
         vectorCollection = Mod26(vectorCollection);
 
@@ -235,7 +235,7 @@ public static class HillCipher
         {
             for(int row = 0; row < vectorCollection.Length; row++)
             {
-                finalString += alphabet[vectorCollection[row][col]];
+                finalString += alphabet[(int)double.Round(vectorCollection[row][col])];
             }
         }
         return finalString;
@@ -245,7 +245,7 @@ public static class HillCipher
     /// <param name="message"> The encrypted message</param>
     /// <returns> The decrypted message </returns>
     /// <exception cref="ArgumentException"> if the key is not invertible</exception>
-    public static string Decrypt(int[][] key, string message)
+    public static string Decrypt(double[][] key, string message)
     {
         string decrypted = string.Empty; //set up a string to return
 
@@ -260,8 +260,14 @@ public static class HillCipher
         double[][] inverse = Invert2x2(key);
 
         //3) revert message back into array
-        //4) multiply the inverse into that collection
-        //5) rebuild the string
+        double[][] vectorCollection = BuildNumMatrix(message, key.Length);
+
+        //5) multiply the inverse into that collection
+        vectorCollection = Mod26(MultiplyIntoCollection(inverse, vectorCollection));
+
+        //6) rebuild the string
+        decrypted = CipherToString(vectorCollection);
+        
         return decrypted;
     }
 
@@ -270,7 +276,7 @@ public static class HillCipher
     /// </summary>
     /// <param name="matrix"></param>
     /// <returns>the inverse of the given 2x2 matrix.</returns>
-    private static double[][] Invert2x2(int[][] matrix)
+    private static double[][] Invert2x2(double[][] matrix)
     {
         double determinant = CalcDeterminant(matrix);
         //error checking:

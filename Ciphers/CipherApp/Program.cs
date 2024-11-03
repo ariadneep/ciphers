@@ -8,7 +8,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        int[][] key = {[ 1, 3 ],[ 2, 5 ]};
+        double[][] key = {[ 1, 3 ],[ 2, 5 ]};
         string message = "message";
 
         string encryption = HillCipher.Encrypt(key, message);
@@ -23,7 +23,7 @@ public class Program
     /// </summary>
     /// <param name="matrix"> the matrix to display as a string</param>
     /// <returns> the string form of a matrix in MATLAB format</returns>
-    private static string MatrixToString(int[][] matrix)
+    private static string MatrixToString(double[][] matrix)
     {
         string str = "[ ";
         for(int row = 0; row < matrix.Length; row++)
