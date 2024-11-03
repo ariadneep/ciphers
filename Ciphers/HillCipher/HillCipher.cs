@@ -78,7 +78,7 @@ public static class HillCipher
     {
         if (!Is2x2(matrix))
             throw new ArgumentException("Matrix must be 2x2!");
-        return (matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0]);
+        return (matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0])%26;
     }
 
     /// <summary>
@@ -275,26 +275,47 @@ public static class HillCipher
     /// <param name="matrix"></param>
     /// <returns>the inverse of the given 2x2 matrix.</returns>
     private static double[][] Invert2x2(double[][] matrix)
+{
+    double determinant = CalcDeterminant(matrix);
+    // Get the modular inverse of the determinant
+    int invDet = ModInverse((int)determinant, 26);
+
+    double[][] inverse = new double[matrix.Length][];
+    for (int i = 0; i < matrix.Length; i++)
+        inverse[i] = new double[matrix.Length];
+
+    // Fill the inverse matrix according to the formula
+    inverse[0][0] = (matrix[1][1] * invDet) % 26;
+    inverse[0][1] = (-matrix[0][1] * invDet) % 26;
+    inverse[1][0] = (-matrix[1][0] * invDet) % 26;
+    inverse[1][1] = (matrix[0][0] * invDet) % 26;
+
+    // Adjust for negative values
+    for (int i = 0; i < inverse.Length; i++)
     {
-        double determinant = CalcDeterminant(matrix);
-        //error checking:
-        if (!Is2x2(matrix))
-            throw new ArgumentException("Must be a 2x2 matrix!");
-        if (determinant == 0)
-            throw new ArgumentException("This matrix is not invertible!");
-
-        //set up the array:
-        double[][] inverse = new double[matrix.Length][];
-        for (int i = 0; i < matrix.Length; i++)
-            inverse[i] = new double[matrix.Length];
-
-        //swap [0][0] with [1][1] and turn [0][1] and [1][0] negative when onserting into inverse array,
-        //and multiply all by 1/determiant:
-        inverse[0][0] = (1/determinant) * matrix[1][1];
-        inverse[1][1] = (1/determinant) * matrix[0][0];
-        inverse[0][1] = (1/determinant) * (-matrix[0][1]);
-        inverse[1][0] = (1/determinant) * (-matrix[1][0]);
-
-        return inverse;
+        for (int j = 0; j < inverse[i].Length; j++)
+        {
+            if (inverse[i][j] < 0)
+                inverse[i][j] += 26;
+        }
     }
+
+    return inverse;
+}
+
+/// <summary>
+/// Calculates the modular inverse
+/// </summary>
+/// <param name="a">the dividend</param>
+/// <param name="m">the divisor</param>
+/// <returns>the remainder as a moodular inverse</returns>
+    private static int ModInverse(int a, int m)
+    {
+        a = a % m;
+        for (int x = 1; x < m; x++)
+            if ((a * x) % m == 1)
+                return x;
+        return a%m;
+    }
+
 }

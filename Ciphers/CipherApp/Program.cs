@@ -8,7 +8,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        double[][] key = {[ 1, 3 ],[ 2, 5 ]};
+        double[][] key = {[ -1, 3 ],[ 9, 5 ]};
         string message = "message";
 
         string encryption = HillCipher.Encrypt(key, message);
