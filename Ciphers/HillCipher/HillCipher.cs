@@ -48,7 +48,7 @@ public static class HillCipher
     private static bool CheckKeyValidity(int[][] key, out string? err)
     {
         // Check if it's square: a non-square matrix cannot be invertible
-        if (!IsInvertible2x2(key))
+        if (!Is2x2(key))
         {
             err = "Key matrix is not a 2x2 invertible matrix.";
             return false;
@@ -71,21 +71,21 @@ public static class HillCipher
     /// Helper method that calculates the determinant of a 2x2 matrix.
     /// </summary>
     /// <param name="matrix"> a 2x2 square matrix</param>
-    /// <exception cref="ArgumentException"> if natrix is not a 2x2 square matrix</exception>
+    /// <exception cref="ArgumentException"> if matrix is not a 2x2 matrix</exception>
     /// <returns></returns>
     private static int calcDeterminant(int[][] matrix)
     {
-        if (!IsInvertible2x2(matrix))
+        if (!Is2x2(matrix))
             throw new ArgumentException("Matrix must be 2x2!");
         return (matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0]);
     }
 
     /// <summary>
-    /// Helper that checks if a matrix is a 2x2 invertible matrix
+    /// Helper that checks if a matrix is a 2x2 matrix
     /// </summary>
     /// <param name="arr"> the matrix to check </param>
     /// <returns>true if it is, false if it is not</returns>
-    private static bool IsInvertible2x2(int[][] arr)
+    private static bool Is2x2(int[][] arr)
     {
         return arr.Length == arr[0].Length && arr.Length == 2;
     }
