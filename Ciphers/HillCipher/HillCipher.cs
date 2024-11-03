@@ -122,7 +122,7 @@ public static class HillCipher
         {
             for (int j = 0; j < arr[i].Length; j++)
             {
-                arr[i][j] = arr[i][j] % 26;
+                arr[i][j] = (arr[i][j] % 26 + 26) % 26; //need this math so negatives don't break
             }
         }
         return arr;
@@ -253,26 +253,24 @@ public static class HillCipher
         //(i.e. the message consists of only letters and the key is invertible)
         if (!(CheckKeyValidity(key, out string? err) && CheckMessageValidity(message, out err)))
             throw new ArgumentException(err);
-        //1) set the key to modulo 26
-        key = Mod26(key);
 
-        //2) find the inverse of the key; 
-        double[][] inverse = Invert2x2(key);
+        //1) find the inverse of the key, modulo 26; 
+        double[][] inverse = Mod26(Invert2x2(key));
 
-        //3) revert message back into array
+        //2) revert message back into array
         double[][] vectorCollection = BuildNumMatrix(message, key.Length);
 
-        //5) multiply the inverse into that collection
+        //3) multiply the inverse into that collection
         vectorCollection = Mod26(MultiplyIntoCollection(inverse, vectorCollection));
 
-        //6) rebuild the string
+        //4) rebuild the string
         decrypted = CipherToString(vectorCollection);
         
         return decrypted;
     }
 
     /// <summary>
-    /// Takes theinverse of a 2x2 matrix.
+    /// Takes the inverse of a 2x2 matrix.
     /// </summary>
     /// <param name="matrix"></param>
     /// <returns>the inverse of the given 2x2 matrix.</returns>
