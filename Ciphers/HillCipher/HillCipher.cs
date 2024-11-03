@@ -235,7 +235,7 @@ public static class HillCipher
         {
             for(int row = 0; row < vectorCollection.Length; row++)
             {
-                finalString += alphabet[(int)double.Round(vectorCollection[row][col])];
+                finalString += alphabet[(int)Math.Round(vectorCollection[row][col]) %26];
             }
         }
         return finalString;
@@ -253,7 +253,7 @@ public static class HillCipher
         //(i.e. the message consists of only letters and the key is invertible)
         if (!(CheckKeyValidity(key, out string? err) && CheckMessageValidity(message, out err)))
             throw new ArgumentException(err);
-
+        key = Mod26(key);
         //1) find the inverse of the key, modulo 26; 
         double[][] inverse = Mod26(Invert2x2(key));
 
