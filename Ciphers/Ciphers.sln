@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HillCipher", "HillCipher\HillCipher.csproj", "{09C75156-C256-4E22-B890-86FBDBD09BA0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CipherApp", "CipherApp\CipherApp.csproj", "{B281C64D-4C23-407C-83F6-D87FBD046622}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{09C75156-C256-4E22-B890-86FBDBD09BA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09C75156-C256-4E22-B890-86FBDBD09BA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09C75156-C256-4E22-B890-86FBDBD09BA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B281C64D-4C23-407C-83F6-D87FBD046622}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B281C64D-4C23-407C-83F6-D87FBD046622}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B281C64D-4C23-407C-83F6-D87FBD046622}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B281C64D-4C23-407C-83F6-D87FBD046622}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
