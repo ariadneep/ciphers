@@ -32,9 +32,10 @@ public static class HillCipher
         int[][] vectorCollection = FormatNumMatrix(message, key.Length);
 
         // 3) Multiply the key into each column 
+        vectorCollection = MultiplyIntoCollection(key, vectorCollection);
+
         // 4) Translate the columns into letters and concatenate together the contents of each row and THEN each column
-        int[] positions = new int[message.Length];
-        throw new NotImplementedException();
+        return CipherToString(vectorCollection);
     }
 
     /// <summary>
@@ -64,7 +65,7 @@ public static class HillCipher
         key = Mod26(key);
 
         // A 2x2 invertible matrix has a set formula for when it is and isn't invertible
-        if ((key[0][0] * key[1][1]) - (key[0][1] * key[1][0]) != 0)
+        if ((key[0][0] * key[1][1]) - (key[0][1] * key[1][0]) == 0)
         {
             err = "This 2x2 matrix has a determinant of 0 and is not invertible.";
             return false;
@@ -94,7 +95,7 @@ public static class HillCipher
     }
 
     /// <summary>
-    /// Creates a modulo 26 version of a jagged array.
+    /// Creates a modulo 26 version of a jagged 2D array.
     /// </summary>
     /// <param name="arr"> A jagged array </param>
     /// <returns> A modified version of the original jagged array where each entry becomes itself mod 26. </returns>
@@ -171,7 +172,24 @@ public static class HillCipher
         // For each column of the collection 
         for (int col = 0; col < collection[0].Length; col++)
         {
-            collection[col] = Mod26(MatrixTimesVector( key, collection[col]));
+            // Create an array to hold the column vector
+            int[] columnVector = new int[collection.Length];
+
+            // Extract the column at index 'col'
+            for (int row = 0; row < collection.Length; row++)
+            {
+                columnVector[row] = collection[row][col]; // Accessing the column element from each row
+            }
+
+            // Perform the matrix multiplication
+            int[] result = MatrixTimesVector(key, columnVector);
+
+            // Store the result back into the collection at the appropriate column
+            for (int row = 0; row < collection.Length; row++)
+            {
+                // Store each value of the result in the appropriate column index
+                collection[row][col] = result[row];
+            }
         }
 
         return collection;
@@ -197,6 +215,27 @@ public static class HillCipher
             product[row] = dot;
         }
         return product;
+    }
+
+    /// <summary>
+    /// Helper method to translate modulo 26 column vectors to an encrypted string.
+    /// </summary>
+    /// <param name="vectorCollection"> a collection of column vectors of integers organized in a 2D array.
+    /// Entries must be in mod 26 form </param>
+    /// <returns></returns>
+    private static string CipherToString(int[][] vectorCollection)
+    {
+        vectorCollection = Mod26(vectorCollection);
+
+        string finalString = string.Empty;
+        for (int col = 0; col < vectorCollection[0].Length; col++)
+        {
+            for(int row = 0; row < vectorCollection.Length; row++)
+            {
+                finalString += alphabet[vectorCollection[row][col]];
+            }
+        }
+        return finalString;
     }
 
     /// <param name="key"> The key used to create the encryption</param>
