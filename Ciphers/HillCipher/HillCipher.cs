@@ -111,6 +111,20 @@ public static class HillCipher
     }
 
     /// <summary>
+    /// Creates a modulo 26 version of a jagged array.
+    /// </summary>
+    /// <param name="arr"> A jagged array </param>
+    /// <returns> A modified version of the original jagged array where each entry becomes itself mod 26. </returns>
+    private static int[] Mod26(int[] arr)
+    {
+        for (int i = 0; i < arr.Length; i++)
+        {
+            arr[i] = arr[i] % 26;
+        }
+        return arr;
+    }
+
+    /// <summary>
     /// Helper method to set up a jagged array for easy multiplication in the next step. Each column is a vector that must
     /// be multiplied later with the key. There are n rows (where n = m = key matrix length/width) and columns equal 
     /// to half the number of letters in the message, rounded up to the closest even number.
@@ -157,23 +171,32 @@ public static class HillCipher
         // For each column of the collection 
         for (int col = 0; col < collection[0].Length; col++)
         {
-            // col = MultiplyMatrices(key, collection.Get);
+            collection[col] = Mod26(MatrixTimesVector( key, collection[col]));
         }
-        // col = key * col
-        // mod 26
 
-        throw new NotImplementedException();
+        return collection;
     }
 
     /// <summary>
-    /// Multiply a jagged array by a vector, given they can be multiplied. 
+    /// Multiply an array by a vector, given they can be multiplied. 
     /// </summary>
-    /// <param name="left"> </param>
-    /// <param name="right"></param>
+    /// <param name="left"> the left side fo matrix multiplication, a square with columns = to the number of
+    /// rows in the vector. </param>
+    /// <param name="right"> a vector, with rows = to the number of columns in the left matrix </param>
     /// <returns></returns>
-    private static int[][] MultiplyMatrices(int[][] left, int[][] right)
+    private static int[] MatrixTimesVector(int[][] left, int[] right)
     {
-        throw new NotImplementedException();
+        int[] product = new int[left.Length];
+        for(int row = 0; row < left.Length; row++)
+        {
+            int dot = 0;
+            for(int col = 0; col < left[row].Length; col++)
+            {
+                dot += left[row][col] * right[col];
+            }
+            product[row] = dot;
+        }
+        return product;
     }
 
     /// <param name="key"> The key used to create the encryption</param>

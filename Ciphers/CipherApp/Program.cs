@@ -4,7 +4,7 @@ public class Program
 {
     static void Main(string[] args)
     {
-        int[,] key = new int[,]{{ 1, 3 },{ 2, 5 } };
+        int[][] key = {[ 1, 3 ],[ 2, 5 ]};
         string message = "message";
 
         string encryption = HillCipher.Encrypt(key, message);
