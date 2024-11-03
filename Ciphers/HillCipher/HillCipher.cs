@@ -244,6 +244,10 @@ public static class HillCipher
     /// <exception cref="NotImplementedException"></exception>
     public static string Decrypt(int[][] key, string message)
     {
-        throw new NotImplementedException();
+        string decrypted = string.Empty;
+        //1) set the key to modulo 26
+        key = Mod26(key);
+
+        return decrypted;
     }
 }
