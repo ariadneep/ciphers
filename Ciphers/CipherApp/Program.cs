@@ -1,10 +1,13 @@
-﻿namespace CipherApp
+﻿namespace Ciphers;
+
+public class Program
 {
-    internal class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Hello, World!");
-        }
+        int[,] key = new int[,]{{ 1, 3 },{ 2, 5 } };
+        string message = "message";
+
+        string encryption = HillCipher.Encrypt(key, message);
+        Console.WriteLine(encryption.ToString());
     }
 }
