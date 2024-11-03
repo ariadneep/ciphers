@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Numerics;
-using System.Reflection;
 
 /// <author> Ariadne Petroulakis </author>
 /// <version>November 2024</version>
@@ -260,7 +257,7 @@ public static class HillCipher
         key = Mod26(key);
 
         //2) find the inverse of the key; 
-        double[][] inverse = Invert2x2Mod26(key);
+        double[][] inverse = Invert2x2(key);
 
         //3) revert message back into array
         double[][] vectorCollection = BuildNumMatrix(message, key.Length);
@@ -275,75 +272,31 @@ public static class HillCipher
     }
 
     /// <summary>
-    /// Calculates the inverse of a 2x2 matrix modulo 26.
+    /// Takes theinverse of a 2x2 matrix.
     /// </summary>
-    /// <param name="matrix">The matrix to be inverted.</param>
-    /// <returns>The inverse of the matrix mod 26.</returns>
-    private static double[][] Invert2x2Mod26(double[][] matrix)
+    /// <param name="matrix"></param>
+    /// <returns>the inverse of the given 2x2 matrix.</returns>
+    private static double[][] Invert2x2(double[][] matrix)
     {
-        if (!Is2x2(matrix))
-            throw new ArgumentException("Matrix must be 2x2!");
-
-        // Calculate determinant
         double determinant = CalcDeterminant(matrix);
+        //error checking:
+        if (!Is2x2(matrix))
+            throw new ArgumentException("Must be a 2x2 matrix!");
+        if (determinant == 0)
+            throw new ArgumentException("This matrix is not invertible!");
 
-        // Find the modular inverse of the determinant mod 26
-        int modDet = (int)determinant % 26;
-        int modInverseDet = ModInverse(modDet, 26);
-        if (modInverseDet == -1)
-            throw new ArgumentException("Matrix determinant has no modular inverse, thus the matrix is not invertible mod 26.");
+        //set up the array:
+        double[][] inverse = new double[matrix.Length][];
+        for (int i = 0; i < matrix.Length; i++)
+            inverse[i] = new double[matrix.Length];
 
-        // Calculate the adjugate matrix
-        double[][] inverse = new double[2][];
-        inverse[0] = new double[2];
-        inverse[1] = new double[2];
-
-        inverse[0][0] = matrix[1][1];
-        inverse[1][1] = matrix[0][0];
-        inverse[0][1] = -matrix[0][1];
-        inverse[1][0] = -matrix[1][0];
-
-        // Multiply adjugate by the modular inverse of the determinant, mod 26
-        for (int i = 0; i < 2; i++)
-        {
-            for (int j = 0; j < 2; j++)
-            {
-                inverse[i][j] = (inverse[i][j] * modInverseDet) % 26;
-                if (inverse[i][j] < 0) // Ensure positive mod
-                    inverse[i][j] += 26;
-            }
-        }
+        //swap [0][0] with [1][1] and turn [0][1] and [1][0] negative when onserting into inverse array,
+        //and multiply all by 1/determiant:
+        inverse[0][0] = (1/determinant) * matrix[1][1];
+        inverse[1][1] = (1/determinant) * matrix[0][0];
+        inverse[0][1] = (1/determinant) * (-matrix[0][1]);
+        inverse[1][0] = (1/determinant) * (-matrix[1][0]);
 
         return inverse;
     }
-
-    /// <summary>
-    /// Finds the modular inverse of a number under a given modulus using the extended Euclidean algorithm.
-    /// </summary>
-    /// <param name="a">The number to find the modular inverse of.</param>
-    /// <param name="m">The modulus.</param>
-    /// <returns>The modular inverse of a mod m, or -1 if no inverse exists.</returns>
-    private static int ModInverse(int number, int modulo)
-    {
-        int result;
-        if (number < 1) throw new ArgumentOutOfRangeException(nameof(number));
-        if (modulo < 2) throw new ArgumentOutOfRangeException(nameof(modulo));
-        int n = number;
-        int m = modulo, v = 0, d = 1;
-        while (n > 0)
-        {
-            int t = m / n, x = n;
-            n = m % x;
-            m = x;
-            x = d;
-            d = checked(v - t * x); // Just in case
-            v = x;
-        }
-        result = v % modulo;
-        if (result < 0) result += modulo;
-        if ((long)number * result % modulo == 1L) return result;
-        result = default;
-        return result;
-    }
-
 }
